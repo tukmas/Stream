@@ -1,31 +1,40 @@
 package com.example.demo;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
-    public static void main(String[] args) {
-        Main main = new Main();
-        Random random = new Random();
-        List<Integer> integerList = new ArrayList<>();
 
-        for (int i = 0; i < 30; i++) {
-            integerList.add(i, random.nextInt(100));
+    public static <T> void findMinMax(
+            Stream<? extends T> stream,
+            Comparator<? super T> order,
+            BiConsumer<? super T, ? super T> minMaxConsumer) {
+        List<T> items = stream.sorted(order).collect(Collectors.toList());
+        if (!items.isEmpty()) {
+            minMaxConsumer.accept(items.get(0), items.get(items.size() - 1));
+        } else {
+            minMaxConsumer.accept(null, null);
         }
-        System.out.println(integerList);
-        Optional<Integer> max = integerList.stream().max(Comparator.naturalOrder());
-        Optional<Integer> min = integerList.stream().min(Comparator.naturalOrder());
-        System.out.println("Максимальное число - " + max + "\n Минимальное число - " + min);
-        main.findEvenNumbersInList(integerList);
+    }
+
+    public static long findCount(List<Integer> list) {
+        return list.stream()
+                .filter(x -> x % 2 == 0)
+                .count();
 
     }
-    private <T> void findMinMax(Stream<? extends T> stream,
-                                Comparator<? super T> order,
-                                BiConsumer<? super T, ? super T> minMaxConsumer) {
 
-    }
-    private void findEvenNumbersInList(List<Integer> integerList){
-        integerList.stream().filter(integer -> integer % 2 == 0).sorted().forEach(System.out::println);
+    public static void main(String[] args) {
+        List<Integer> list = new ArrayList<>(List.of(12, 15, 36, 48, 16, 17, 18, 22, 25));
+        Stream<Integer> list1 = list.stream();
+
+        System.out.println(findCount(list));
+        findMinMax(list1, Integer::compareTo, (x, y) -> System.out.printf("min: " + x + " max: " + y));
+        list1.close();
+
     }
 }
